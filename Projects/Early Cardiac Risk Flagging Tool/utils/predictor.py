@@ -2,22 +2,29 @@ import os
 import pickle
 import pandas as pd
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, "model", "cardiac_model.pkl")
 
-model_path = os.path.join(os.path.dirname(__file__), "..", "model", "cardiac_model.pkl")
-with open(model_path, "rb") as f:
+with open(MODEL_PATH, "rb") as f:
     model = pickle.load(f)
 
-def predict_urgency(patient_data):
-    df = pd.DataFrame([patient_data])
+FEATURES = ['Age', 'Heart_Disease_encoded', 'BP', 'Max HR', 'Cholesterol']
+
+def predict_urgency(patient_data: dict):
+    # Ensure DataFrame columns match pipeline exactly in name and order
+    df = pd.DataFrame([patient_data], columns=FEATURES)
+
     urgency_level = model.predict(df)[0]
 
-    explanation = f"Based on input features, the predicted risk is {urgency_level}."
-
-    if urgency_level == "High":
-        action = "Immediate medical attention required"
-    elif urgency_level == "Medium":
-        action = "Monitor closely and run further tests"
+    # Map urgency to explanation and action
+    if urgency_level == "Low Risk":
+        explanation = "Patient shows low cardiac risk indicators."
+        action = "Routine monitoring recommended."
+    elif urgency_level == "Moderate Risk":
+        explanation = "Patient shows moderate cardiac risk indicators."
+        action = "Schedule cardiology follow-up."
     else:
-        action = "Routine care recommended"
+        explanation = "Patient shows high cardiac risk indicators."
+        action = "Immediate medical attention required."
 
     return urgency_level, explanation, action

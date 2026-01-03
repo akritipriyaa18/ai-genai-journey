@@ -12,13 +12,17 @@ with col1:
     st.header("Patient Information")
 
     age = st.number_input("Age", min_value = 0, max_value=120, value=30)
-    gender = st.selectbox("Gender", ["Male", "Female", "Other"])
     bp = st.number_input("BP", min_value=80, max_value=200, value=100)
     max_hr = st.number_input("Max HR", min_value=30, max_value=200, value=70)
     cholesterol = st.number_input("Cholesterol", min_value=120, max_value=400, value=120)
     symptoms = st.text_area("Symptoms")
 
-    gender_encoded = 0 if gender == "Male" else 1 if gender == "Female" else 2
+    heart_disease = st.selectbox(
+        "History of Heart Disease",
+        ["No", "Yes"]
+    )
+
+    heart_disease_encoded = 1 if heart_disease == "Yes" else 0 
 
     analyze_btn = st.button("Analyze Patient")
 
@@ -31,9 +35,9 @@ with col2:
         patient_data = {
             "Age": age,
             "BP" : bp,
-            "Max_HR": max_hr,
             "Cholesterol": cholesterol,
-            "Gender_encoded": gender_encoded
+            "Heart_Disease_encoded": heart_disease_encoded,
+            "Max HR": max_hr
         }
 
         urgency, explanation, action = predict_urgency(patient_data)
